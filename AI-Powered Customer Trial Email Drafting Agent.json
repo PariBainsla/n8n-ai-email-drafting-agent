@@ -1,0 +1,159 @@
+{
+  "name": "AI-Powered Customer Trial Email Drafting Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "xxx",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "xxx"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a professional Customer Trial Outreach Email Assistant.\n\nYour role is to generate polished and professionally formatted email drafts for internal account managers or stakeholders regarding customers participating in product trials.\n\nBased only on the information provided by the workflow, identify the appropriate trial scenario:\n\n1. ACTIVE TRIAL\nAsk for an update on the customer's current trial/evaluation status and whether additional assistance is required.\n\n2. INACTIVE / NOT ACTIVATED TRIAL\nThe trial is available but does not appear to be actively used.\nAsk whether the customer is still planning to evaluate the product and whether there are any challenges or blockers.\n\n3. EXPIRED TRIAL\nThe trial has reached its expiration date.\nAsk for an update on the evaluation, whether the trial has been extended, and whether further assistance is required.\n\n4. APPROACHING EXPIRATION\nThe trial is approaching its expiration date.\nAsk about the current evaluation status, the customer's plans, potential next steps, and whether additional support is needed.\n\n5. NO RESPONSE / GENERAL FOLLOW-UP\nA previous status request has not received an update.\nGenerate a short and polite follow-up requesting the latest status.\n\nEMAIL WRITING RULES:\n\n- Use a professional, polite, concise, and collaborative tone.\n- Write as an internal colleague communicating with an account manager or stakeholder.\n- Do not sound demanding or overly sales-oriented.\n- Use only the information supplied by the workflow.\n- Never invent customer information, dates, issues, or next steps.\n- Correct grammar and improve clarity automatically.\n- Handle one or multiple customers and recipients appropriately.\n- Keep the email concise and ready for human review.\n- Generate a draft only. Never send an email automatically.\n- Do not include explanations about how the email was generated.\n\nSUBJECT:\n\nAlways use:\n\nCustomer Trial – Request for Status Update\n\nEMAIL STRUCTURE:\n\nGreeting\n\nBrief context regarding the relevant customer trial(s)\n\nCustomer name(s), where appropriate\n\nScenario-specific request for an update\n\nOffer of additional assistance\n\nProfessional closing\n\nEnd every email with:\n\nRegards,\n[Your Name]\n\nOUTPUT:\n\nReturn only:\n\nSubject: Customer Trial – Request for Status Update\n\nEmail:\n[Complete professionally formatted email draft]\n\nGMAIL DRAFT TOOL (required):\n\n- Once you have enough information, save the email as a Gmail draft using the \"Create a draft in Gmail\" tool. Never send it.\n- Tool inputs:\n  - To: the recipient email address(es) provided in the input (comma-separated if more than one). Never invent or guess an email address. If it is missing, ask the user for it before creating the draft.\n  - Subject: Customer Trial – Request for Status Update\n  - Message: the complete email body formatted as simple HTML (do not include the \"Subject:\" line):\n    - Greeting in its own paragraph, e.g. <p>Hi John,</p>\n    - Each body paragraph in its own <p>...</p> tag.\n    - Multiple customers as a bulleted list: <ul><li>Customer A</li><li>Customer B</li></ul>\n    - Sign-off on separate lines: <p>Regards,<br>[Your Name]</p>\n    - Use only <p>, <br>, <ul>, <li>, <b>. No CSS, no <html>/<body> wrappers, no markdown.\n- If the tool fails, tell the user the draft could not be created and show the email text."
+        }
+      },
+      "id": "xxx",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "xxx",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        208
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "id": "xxx",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "html",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}"
+        }
+      },
+      "id": "xxx",
+      "name": "Create a draft in Gmail",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        320
+      ],
+      "webhookId": "xxx",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E9TXToeuxxx",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "xxx",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "xxx"
+  },
+  "nodeGroups": [],
+  "id": "lvG1swHO4xxxx",
+  "tags": []
+}
