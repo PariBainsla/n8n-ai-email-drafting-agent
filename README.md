@@ -44,3 +44,6 @@ The workflow intentionally creates an email **draft rather than automatically se
 - Simple Memory
 
 <img width="1362" height="918" alt="Image" src="https://github.com/user-attachments/assets/b9cd6239-15db-4f92-833c-a395a46049d8" />
+
+<img width="1500" height="402" alt="image" src="https://github.com/user-attachments/assets/422a916b-ab5a-40fd-b514-13c3d4dadb21" />
+
